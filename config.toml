@@ -1,0 +1,8 @@
+http_port=":9090"
+[database]
+name="news"
+host="localhost"
+port=5432
+user="postgres"
+password="admin"
+table_name="articles"
