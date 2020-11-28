@@ -35,7 +35,10 @@ make build
 ```
 
 ## RUN
+This parser works only with RSS links in the 'notes.txt' file
+
 For running program use command:
+
 
 ```
 ./news-parser -u https://www.examplesite.com/world/rss
