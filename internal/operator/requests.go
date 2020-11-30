@@ -1,9 +1,9 @@
 package operator
 
 import (
+	"github.com/daniilsolovey/rss-parser/internal/database"
 	"github.com/mmcdole/gofeed"
 	"github.com/reconquest/karma-go"
-	"github.com/rss-parser/internal/database"
 )
 
 func (operator *Operator) getNews(url string) ([]database.ResultNews, error) {

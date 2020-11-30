@@ -4,13 +4,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/daniilsolovey/rss-parser/internal/config"
+	"github.com/daniilsolovey/rss-parser/internal/database"
+	"github.com/daniilsolovey/rss-parser/internal/handler"
+	"github.com/daniilsolovey/rss-parser/internal/operator"
 	"github.com/docopt/docopt-go"
 	"github.com/reconquest/karma-go"
 	"github.com/reconquest/pkg/log"
-	"github.com/rss-parser/internal/config"
-	"github.com/rss-parser/internal/database"
-	"github.com/rss-parser/internal/handler"
-	"github.com/rss-parser/internal/operator"
 )
 
 var version = "[manual build]"

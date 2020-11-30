@@ -1,9 +1,9 @@
 package operator
 
 import (
+	"github.com/daniilsolovey/rss-parser/internal/config"
+	"github.com/daniilsolovey/rss-parser/internal/database"
 	"github.com/reconquest/karma-go"
-	"github.com/rss-parser/internal/config"
-	"github.com/rss-parser/internal/database"
 )
 
 type Operator struct {

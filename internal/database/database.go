@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/daniilsolovey/rss-parser/internal/config"
 	_ "github.com/lib/pq"
 	"github.com/reconquest/karma-go"
 	"github.com/reconquest/pkg/log"
-	"github.com/rss-parser/internal/config"
 )
 
 type Database struct {

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/daniilsolovey/rss-parser/internal/config"
+	"github.com/daniilsolovey/rss-parser/internal/database"
 	"github.com/reconquest/pkg/log"
-	"github.com/rss-parser/internal/config"
-	"github.com/rss-parser/internal/database"
 )
 
 type Handler struct {
