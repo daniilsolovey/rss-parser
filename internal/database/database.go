@@ -86,7 +86,7 @@ func Connect(config *config.Config) (*sql.DB, error) {
 
 	db, err = sql.Open("postgres", psqlInfoWithDatabase)
 	if err != nil {
-		karma.Format(
+		return nil, karma.Format(
 			err,
 			"unable to open connection to the database",
 		)
@@ -97,14 +97,17 @@ func Connect(config *config.Config) (*sql.DB, error) {
 }
 
 func (database *Database) CreateTable() {
-	_ = database.db.QueryRow("create table articles(id serial primary key, title text, link text, author text, date text);")
+	_ = database.db.QueryRow(
+		"create table articles(id serial primary key, title text, link text, author text, date text);",
+	)
 }
 
 func (database *Database) InsertNewsIntoTable(tableName, title, link, author, date string) {
 	query := "insert into " + tableName +
 		"(" + "title" + ", " + "link" + ", " + "author" + ", " + "date" + ")" +
 		" " + "values" + " " +
-		"(" + "'" + title + "', " + "'" + link + "', " + "'" + author + "', " + "'" + date + "'" + ")" +
+		"(" + "'" + title + "', " + "'" + link + "', " + "'" + author + "', " +
+		"'" + date + "'" + ")" +
 		";"
 	_ = database.db.QueryRow(query)
 }

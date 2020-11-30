@@ -10,7 +10,7 @@ func (operator *Operator) getNews(url string) ([]database.ResultNews, error) {
 	feedParser := gofeed.NewParser()
 	feed, err := feedParser.ParseURL(url)
 	if err != nil {
-		karma.Format(
+		return nil, karma.Format(
 			err,
 			"unable to parse url, url: %s",
 			url,
@@ -37,5 +37,4 @@ func (operator *Operator) getNews(url string) ([]database.ResultNews, error) {
 	}
 
 	return result, nil
-
 }

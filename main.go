@@ -92,7 +92,10 @@ func main() {
 
 	go func() {
 		for {
-			operator.AddNewsToDatabase(url)
+			err = operator.AddNewsToDatabase(url)
+			if err != nil {
+				log.Error(err)
+			}
 			time.Sleep(RECEIVING_NEWS_INTERVAL)
 		}
 	}()

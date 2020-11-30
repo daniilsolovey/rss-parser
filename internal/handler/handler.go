@@ -48,11 +48,16 @@ func (handler *Handler) FindNewsInDatabase(w http.ResponseWriter, r *http.Reques
 				"unable to print html data",
 			)
 			w.WriteHeader(http.StatusInternalServerError)
-
 		}
 
 	case "POST":
-		r.ParseForm()
+		err := r.ParseForm()
+		if err != nil {
+			log.Errorf(
+				err,
+				"unable to parse form",
+			)
+		}
 		for _, values := range r.Form {
 			for _, value := range values {
 				requestedText = value
@@ -60,7 +65,7 @@ func (handler *Handler) FindNewsInDatabase(w http.ResponseWriter, r *http.Reques
 		}
 
 		if requestedText == "" {
-			_, err := fmt.Fprintln(w, "write text in the input field")
+			_, err = fmt.Fprintln(w, "write text in the input field")
 			if err != nil {
 				log.Errorf(
 					err,
@@ -74,15 +79,13 @@ func (handler *Handler) FindNewsInDatabase(w http.ResponseWriter, r *http.Reques
 
 		records, err := handler.database.GetAllRecords()
 		if err != nil {
-			if err != nil {
-				log.Errorf(
-					err,
-					"unable to get records from database",
-				)
+			log.Errorf(
+				err,
+				"unable to get records from database",
+			)
 
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		i := 0

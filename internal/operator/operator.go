@@ -23,11 +23,6 @@ func NewOperator(
 	return operator
 }
 
-func (operator *Operator) GetAllRecords() {
-	operator.database.GetAllRecords()
-
-}
-
 func (operator *Operator) CreateTable() {
 	operator.database.CreateTable()
 }
