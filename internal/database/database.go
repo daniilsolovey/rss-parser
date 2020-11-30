@@ -8,7 +8,6 @@ import (
 	"github.com/daniilsolovey/rss-parser/internal/config"
 	_ "github.com/lib/pq"
 	"github.com/reconquest/karma-go"
-	"github.com/reconquest/pkg/log"
 )
 
 type Database struct {
@@ -42,7 +41,7 @@ func NewDatabase(
 	return database
 }
 
-func Connect(config *config.Config) (*sql.DB, error) {
+func CreateDatabase(config *config.Config) error {
 	psqlInfo := fmt.Sprintf(
 		"host=%s port=%d user=%s "+
 			"password=%s sslmode=disable",
@@ -52,7 +51,7 @@ func Connect(config *config.Config) (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		return nil, karma.Format(
+		return karma.Format(
 			err,
 			"unable to open connection to the database",
 		)
@@ -60,7 +59,7 @@ func Connect(config *config.Config) (*sql.DB, error) {
 
 	err = db.Ping()
 	if err != nil {
-		return nil, karma.Format(
+		return karma.Format(
 			err,
 			"unable to ping database",
 		)
@@ -69,7 +68,7 @@ func Connect(config *config.Config) (*sql.DB, error) {
 	_, err = db.Exec("create database " + config.Database.Name)
 	if err != nil {
 		if !strings.Contains(err.Error(), "already exists") {
-			return nil, karma.Format(
+			return karma.Format(
 				err,
 				"unable to create database",
 			)
@@ -77,6 +76,10 @@ func Connect(config *config.Config) (*sql.DB, error) {
 	}
 
 	db.Close()
+	return nil
+}
+
+func Connect(config *config.Config) (*sql.DB, error) {
 	psqlInfoWithDatabase := fmt.Sprintf(
 		"host=%s port=%d user=%s "+
 			"password=%s dbname=%s sslmode=disable",
@@ -84,7 +87,7 @@ func Connect(config *config.Config) (*sql.DB, error) {
 		config.Database.User, config.Database.Password, config.Database.Name,
 	)
 
-	db, err = sql.Open("postgres", psqlInfoWithDatabase)
+	db, err := sql.Open("postgres", psqlInfoWithDatabase)
 	if err != nil {
 		return nil, karma.Format(
 			err,
@@ -92,7 +95,6 @@ func Connect(config *config.Config) (*sql.DB, error) {
 		)
 	}
 
-	log.Info("successfully connection")
 	return db, nil
 }
 
@@ -102,7 +104,9 @@ func (database *Database) CreateTable() {
 	)
 }
 
-func (database *Database) InsertNewsIntoTable(tableName, title, link, author, date string) {
+func (database *Database) InsertNewsIntoTable(
+	tableName, title, link, author, date string,
+) {
 	query := "insert into " + tableName +
 		"(" + "title" + ", " + "link" + ", " + "author" + ", " + "date" + ")" +
 		" " + "values" + " " +
@@ -116,7 +120,7 @@ func (database *Database) GetAllRecords() ([]ResultNews, error) {
 	query := "select title, link, author, date from " +
 		database.config.Database.TableName + ";"
 	rows, err := database.db.Query(query)
-	if err != nil {
+	if err != nil || rows.Err() != nil {
 		return nil, karma.Format(
 			err,
 			"unable to get rows from database",

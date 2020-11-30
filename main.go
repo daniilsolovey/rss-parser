@@ -30,7 +30,7 @@ Options:
 `
 
 const (
-	RECEIVING_NEWS_INTERVAL = 1 * time.Hour
+	RECEIVING_NEWS_INTERVAL = 10 * time.Minute
 )
 
 type Options struct {
@@ -71,6 +71,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	log.Info("creating database")
+	err = database.CreateDatabase(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Infof(
+		karma.Describe("database", config.Database.Name),
+		"database successfully created",
+	)
+
 	log.Infof(
 		karma.Describe("database", config.Database.Name),
 		"connecting to the database",
@@ -82,6 +93,8 @@ func main() {
 	}
 
 	defer db.Close()
+
+	log.Info("successful connection to the database")
 
 	database := database.NewDatabase(db, config)
 	handler := handler.NewHandler(database, config)
