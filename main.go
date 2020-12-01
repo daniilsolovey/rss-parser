@@ -17,11 +17,11 @@ import (
 
 var version = "[manual build]"
 
-var usage = `news-agregator
+var usage = `rss-parser
 Receive news and write in database
 
 Usage:
-  news-agregator [options] -u <url>
+  rss-parser [options] -u <url>
 
 Options:
   -u --url <url>      rss url in format: 'https://www.news_site.com/world/rss'
@@ -45,7 +45,7 @@ func main() {
 	args, err := docopt.ParseArgs(
 		usage,
 		nil,
-		"news-agregator"+version,
+		"rss-parser version: "+version,
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -53,7 +53,7 @@ func main() {
 
 	log.Infof(
 		karma.Describe("version", version),
-		"news-agregator started",
+		"rss-parser started",
 	)
 
 	if args["--debug"].(bool) {
