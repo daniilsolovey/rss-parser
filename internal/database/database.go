@@ -119,14 +119,20 @@ func (database *Database) InsertNewsIntoTable(
 	_ = database.db.QueryRow(query)
 }
 
-func (database *Database) GetAllRecords() (*[]ResultNews, error) {
+func (database *Database) GetRecordsByFilter(filter string) (*[]ResultNews, error) {
 	query := "select title, link, author, date from " +
-		database.config.Database.TableName + ";"
+		database.config.Database.TableName +
+		" where " +
+		"title like " + "'%" + filter + "%'" + " or " +
+		"link like " + "'%" + filter + "%'" + " or " +
+		"author like " + "'%" + filter + "%'" + ";"
+
 	rows, err := database.db.Query(query)
 	if err != nil || rows.Err() != nil {
 		return nil, karma.Format(
 			err,
-			"unable to get rows from database",
+			"unable to get rows from database by filter: %s",
+			filter,
 		)
 	}
 

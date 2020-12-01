@@ -78,7 +78,7 @@ func (handler *Handler) FindNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	records, err := handler.database.GetAllRecords()
+	records, err := handler.database.GetRecordsByFilter(requestedText)
 	if err != nil {
 		log.Errorf(
 			err,
