@@ -37,37 +37,12 @@ func (operator *Operator) AddNewsToDatabase(url string) error {
 		)
 	}
 
-	records, err := operator.database.GetAllRecords()
-	if err != nil {
-		return karma.Format(
-			err,
-			"unable to get all records from the database",
-		)
-	}
-
 	for _, item := range news {
-		if checkDuplicates(records, item) {
-			continue
-		}
-
 		operator.database.InsertNewsIntoTable(
 			operator.config.Database.TableName,
-			item.Title,
-			item.Link,
-			item.Author,
-			item.Date,
+			item,
 		)
 	}
 
 	return nil
-}
-
-func checkDuplicates(data []database.ResultNews, record database.ResultNews) bool {
-	for _, item := range data {
-		if record.Title == item.Title {
-			return true
-		}
-	}
-
-	return false
 }

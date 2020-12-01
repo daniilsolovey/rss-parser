@@ -1,6 +1,6 @@
 http_port=":9090"
 [database]
-name="news"
+name="news_3"
 host="localhost"
 port=5432
 user="postgres"

@@ -9,6 +9,8 @@ import (
 	"github.com/daniilsolovey/rss-parser/internal/handler"
 	"github.com/daniilsolovey/rss-parser/internal/operator"
 	"github.com/docopt/docopt-go"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/reconquest/karma-go"
 	"github.com/reconquest/pkg/log"
 )
@@ -113,10 +115,31 @@ func main() {
 		}
 	}()
 
-	http.HandleFunc("/news", handler.FindNewsInDatabase)
-	log.Infof(nil, "listening on port %s", config.HTTPPort)
-	err = http.ListenAndServe(config.HTTPPort, nil)
+	err = router(handler, config)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+func router(handler *handler.Handler, config *config.Config) error {
+	router := chi.NewRouter()
+
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+
+	router.Use(middleware.Timeout(60 * time.Second))
+
+	router.Route("/", func(r chi.Router) {
+		r.Get("/news", handler.GetMainPage)
+		r.Post("/news", handler.FindNews)
+	})
+
+	err := http.ListenAndServe(config.HTTPPort, router)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

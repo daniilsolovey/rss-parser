@@ -100,19 +100,21 @@ func Connect(config *config.Config) (*sql.DB, error) {
 
 func (database *Database) CreateTable() {
 	_ = database.db.QueryRow(
-		"create table articles(id serial primary key, title text, link text, author text, date text);",
+		"create table articles(" +
+			"id serial primary key, title text, link text, author text, date text, " +
+			"unique (title));",
 	)
 }
 
 func (database *Database) InsertNewsIntoTable(
-	tableName, title, link, author, date string,
+	tableName string, record ResultNews,
 ) {
 	query := "insert into " + tableName +
 		"(" + "title" + ", " + "link" + ", " + "author" + ", " + "date" + ")" +
 		" " + "values" + " " +
-		"(" + "'" + title + "', " + "'" + link + "', " + "'" + author + "', " +
-		"'" + date + "'" + ")" +
-		";"
+		"(" + "'" + record.Title + "', " + "'" + record.Link + "', " + "'" + record.Author + "', " +
+		"'" + record.Date + "'" + ")" +
+		"ON CONFLICT DO NOTHING ;"
 	_ = database.db.QueryRow(query)
 }
 
