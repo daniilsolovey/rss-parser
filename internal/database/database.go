@@ -16,6 +16,7 @@ type Database struct {
 }
 
 type ResultNews struct {
+	Number int    `json:"number"`
 	Title  string `json:"title"`
 	Link   string `json:"link"`
 	Author string `json:"author"`
@@ -118,7 +119,7 @@ func (database *Database) InsertNewsIntoTable(
 	_ = database.db.QueryRow(query)
 }
 
-func (database *Database) GetAllRecords() ([]ResultNews, error) {
+func (database *Database) GetAllRecords() (*[]ResultNews, error) {
 	query := "select title, link, author, date from " +
 		database.config.Database.TableName + ";"
 	rows, err := database.db.Query(query)
@@ -150,5 +151,5 @@ func (database *Database) GetAllRecords() ([]ResultNews, error) {
 		resultMain = append(resultMain, dataMain)
 	}
 
-	return resultMain, nil
+	return &resultMain, nil
 }

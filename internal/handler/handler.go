@@ -27,7 +27,7 @@ func NewHandler(
 }
 
 func (handler *Handler) GetMainPage(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("site.html")
+	t, err := template.ParseFiles("static/site.html")
 	if err != nil {
 		log.Errorf(
 			err,
@@ -89,28 +89,25 @@ func (handler *Handler) FindNews(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	resultTemplate := template.Must(template.ParseFiles("static/search_result.html"))
+
 	i := 0
-	for _, item := range records {
+	for _, item := range *records {
 		i = i + 1
 		if strings.Contains(item.Author, requestedText) ||
 			strings.Contains(item.Title, requestedText) ||
 			strings.Contains(item.Link, requestedText) {
-			_, err = fmt.Fprintln(
-				w,
-				"№ ", i,
-				"\n Title:", item.Title,
-				"\n Author:", item.Author,
-				"\n Date:", item.Date,
-				"\n Link:", item.Link,
-			)
+			item.Number = i
+			err = resultTemplate.ExecuteTemplate(w, "search_result.html", item)
 			if err != nil {
 				log.Errorf(
 					err,
-					"unable to print data",
+					"unable to execute template",
 				)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+
 		}
 	}
 }
