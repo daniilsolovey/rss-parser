@@ -41,5 +41,5 @@ For running program use command:
 
 
 ```
-./news-parser -u https://www.examplesite.com/world/rss
+./rss-parser -u https://www.examplesite.com/world/rss
 ```

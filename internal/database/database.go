@@ -108,7 +108,7 @@ func (database *Database) CreateTable() {
 }
 
 func (database *Database) InsertNewsIntoTable(
-	tableName string, record ResultNews,
+	tableName string, record *ResultNews,
 ) {
 	query := "insert into " + tableName +
 		"(" + "title" + ", " + "link" + ", " + "author" + ", " + "date" + ")" +

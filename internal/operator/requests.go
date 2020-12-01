@@ -6,7 +6,7 @@ import (
 	"github.com/reconquest/karma-go"
 )
 
-func (operator *Operator) getNews(url string) ([]database.ResultNews, error) {
+func (operator *Operator) getNews(url string) ([]*database.ResultNews, error) {
 	feedParser := gofeed.NewParser()
 	feed, err := feedParser.ParseURL(url)
 	if err != nil {
@@ -17,7 +17,7 @@ func (operator *Operator) getNews(url string) ([]database.ResultNews, error) {
 		)
 	}
 
-	var result []database.ResultNews
+	var result []*database.ResultNews
 	for _, item := range feed.Items {
 		var date string
 		if item.UpdatedParsed == nil {
@@ -33,7 +33,7 @@ func (operator *Operator) getNews(url string) ([]database.ResultNews, error) {
 			Date:   date,
 		}
 
-		result = append(result, item)
+		result = append(result, &item)
 	}
 
 	return result, nil
