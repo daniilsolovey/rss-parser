@@ -101,7 +101,11 @@ func main() {
 	database := database.NewDatabase(db, config)
 	handler := handler.NewHandler(database, config)
 	operator := operator.NewOperator(database, config)
-	operator.CreateTable()
+
+	err = operator.CreateTable()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	url := opts.URL
 

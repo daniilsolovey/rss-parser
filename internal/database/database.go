@@ -76,7 +76,14 @@ func CreateDatabase(config *config.Config) error {
 		}
 	}
 
-	db.Close()
+	err = db.Close()
+	if err != nil {
+		return karma.Format(
+			err,
+			"unable to close connection to the database",
+		)
+	}
+
 	return nil
 }
 
@@ -99,35 +106,55 @@ func Connect(config *config.Config) (*sql.DB, error) {
 	return db, nil
 }
 
-func (database *Database) CreateTable() {
-	_ = database.db.QueryRow(
-		"create table articles(" +
-			"id serial primary key, title text, link text, author text, date text, " +
-			"unique (title));",
+func (database *Database) CreateTable() error {
+	result := database.db.QueryRow(
+		"CREATE TABLE articles(id serial primary key, title text, link text, " +
+			"author text, date text, unique (title))",
 	)
+
+	if result.Err() != nil && !strings.Contains(result.Err().Error(), "already exists") {
+		return karma.Describe(
+			"table_name", database.config.Database.TableName,
+		).Format(
+			result.Err(),
+			"unable to create table",
+		)
+	}
+	return nil
 }
 
-func (database *Database) InsertNewsIntoTable(
+func (database *Database) InsertIntoTable(
 	tableName string, record *ResultNews,
-) {
-	query := "insert into " + tableName +
-		"(" + "title" + ", " + "link" + ", " + "author" + ", " + "date" + ")" +
-		" " + "values" + " " +
-		"(" + "'" + record.Title + "', " + "'" + record.Link + "', " + "'" + record.Author + "', " +
-		"'" + record.Date + "'" + ")" +
-		"ON CONFLICT DO NOTHING ;"
-	_ = database.db.QueryRow(query)
+) error {
+	rows, err := database.db.Query(
+		"INSERT INTO "+database.config.Database.TableName+
+			" (title, link, author, date) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING",
+		record.Title, record.Link, record.Author, record.Date,
+	)
+	if err != nil || rows.Err() != nil {
+		return karma.Describe(
+			"table_name", tableName,
+		).Describe(
+			"title", record.Title,
+		).Describe(
+			"author", record.Author,
+		).Describe(
+			"link", record.Link,
+		).Format(
+			err,
+			"unable to insert values to table",
+		)
+	}
+
+	return nil
 }
 
 func (database *Database) GetRecordsByFilter(filter string) (*[]ResultNews, error) {
-	query := "select title, link, author, date from " +
-		database.config.Database.TableName +
-		" where " +
-		"title like " + "'%" + filter + "%'" + " or " +
-		"link like " + "'%" + filter + "%'" + " or " +
-		"author like " + "'%" + filter + "%'" + ";"
-
-	rows, err := database.db.Query(query)
+	rows, err := database.db.Query(
+		"SELECT title, link, author, date FROM "+database.config.Database.TableName+
+			" WHERE title LIKE $1 OR link LIKE $1 OR author LIKE $1",
+		"%"+filter+"%",
+	)
 	if err != nil || rows.Err() != nil {
 		return nil, karma.Format(
 			err,

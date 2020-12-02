@@ -23,8 +23,16 @@ func NewOperator(
 	return operator
 }
 
-func (operator *Operator) CreateTable() {
-	operator.database.CreateTable()
+func (operator *Operator) CreateTable() error {
+	err := operator.database.CreateTable()
+	if err != nil {
+		return karma.Format(
+			err,
+			"unable to create table",
+		)
+	}
+
+	return nil
 }
 
 func (operator *Operator) AddNewsToDatabase(url string) error {
@@ -38,10 +46,16 @@ func (operator *Operator) AddNewsToDatabase(url string) error {
 	}
 
 	for _, item := range news {
-		operator.database.InsertNewsIntoTable(
+		err = operator.database.InsertIntoTable(
 			operator.config.Database.TableName,
 			item,
 		)
+		if err != nil {
+			return karma.Format(
+				err,
+				"unable to insert data to table",
+			)
+		}
 	}
 
 	return nil
